@@ -1,18 +1,22 @@
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
-import HomePage from './HomePage'
+import Home from './Home'
+import Profile from './Profile';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
+import "bootstrap/dist/css/bootstrap.min.css";
 import './App.css'
 import Search from './Search';
-import Details from "./Details";
 
-export default function App() {
+function App() {
+
   return (
     <HashRouter>
       <Routes>
-        <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/search/:query" element={<Search />} />
-        <Route path="/details/:movieName" element={<Details />} />
+        <Route /* Home Page */ path="/" element={<Navigate to="home"/>} />
+        <Route /* Home Page */ path="/home" element={<Home/>} />
+        <Route /* Profile Page */ path="/profile" element={<Profile/>} />
+        <Route /* Search Page */ path="/search/*" element={<Search />} />
       </Routes>
     </HashRouter>
   )
 }
+
+export default App;
