@@ -11,7 +11,7 @@ function App() {
       <Routes>
         <Route /* Home Page */ path="/" element={<Navigate to="home"/>} />
         <Route /* Home Page */ path="/home" element={<Home/>} />
-        <Route /* Profile Page */ path="/profile" element={<Profile/>} />
+        <Route /* Profile Page */ path="/profile/*" element={<Profile/>} />
       </Routes>
     </HashRouter>
   )

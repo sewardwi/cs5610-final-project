@@ -1,14 +1,19 @@
+import { Routes, Route, Navigate } from "react-router-dom";
 import Navigation from "../Navigation";
+import ProfileNavigation from "./ProfileNavigation";
+import MyProfile from "./MyProfile";
 
 export default function Profile() {
     return (
         <>
-            <Navigation />
-            <div className="jaw-content">
-                <h1>Profile Page</h1>
-                <p>This is the profile page where users can view and edit their profile information.</p>
-            </div>
-            
-        </>
+        <Navigation />
+        <div id="jaw-profile-content" style={{ display: 'flex', flexDirection: 'row' }}>
+            <ProfileNavigation />
+            <Routes>
+                <Route path="/" element={<Navigate to="myprofile" />} />
+                <Route path="/myprofile/*" element={<MyProfile />} />
+            </Routes>
+        </div>
+      </>
     );
 }
