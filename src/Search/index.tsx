@@ -113,7 +113,7 @@ export default function Search() {
                   {movies.map(movie => (
                     <Link 
                       key={movie.id}
-                      to={`/details/${encodeURIComponent(movie.title)}`}
+                      to={`/details/${encodeURIComponent(movie.id)}`}
                       style={{ textDecoration: 'none' }}
                     >
                       <div style={{ 

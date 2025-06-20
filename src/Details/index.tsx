@@ -1,7 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import Navigation from '../Navigation'
 import { TMDB_API_KEY, TMDB_BASE_URL, TMDB_IMAGE_BASE_URL } from '../TMDb_API/helpers'
+import * as commentsClient from "./client.ts";
 
 interface MovieDetails {
   id: number;
@@ -32,52 +34,25 @@ interface MovieCredits {
   }[];
 }
 
-interface Comment {
-  id: number;
-  author: string;
-  text: string;
-}
-
 export default function Details() {
   const { movieName } = useParams()
-  const decodedMovieName = decodeURIComponent(movieName || '')
+  const movieId = movieName; // it is coming in as movieName but it is actually the ID
   
   const [movieDetails, setMovieDetails] = useState<MovieDetails | null>(null)
   const [movieCredits, setMovieCredits] = useState<MovieCredits | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
-  // example comments - change to fetch from backend and database
-  const [comments, setComments] = useState<Comment[]>([
-    { id: 1, author: 'MovieFan123', text: 'Amazing movie! One of my all-time favorites.' },
-    { id: 2, author: 'CinemaLover', text: 'The special effects were groundbreaking for its time.' }
-  ])
+  const [comments, setComments] = useState<any[]>([])
   const [newComment, setNewComment] = useState('')
   const [newAuthor, setNewAuthor] = useState('')
 
-  // search for movie and get details
-  const fetchMovieDetails = async (movieTitle: string) => {
-    if (!movieTitle.trim()) return;
-    
+  // fetch movie details from api using movieId
+  const fetchMovieDetails = async (movieId: string) => {
     setLoading(true);
     setError(null);
     
     try {
-      const searchResponse = await fetch(
-        `${TMDB_BASE_URL}/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(movieTitle)}&language=en-US&page=1`
-      );
-      
-      if (!searchResponse.ok) {
-        throw new Error(`Search failed: ${searchResponse.status}`);
-      }
-      
-      const searchData = await searchResponse.json();
-      if (searchData.results.length === 0) {
-        throw new Error('Movie not found');
-      }
-      
-      const movieId = searchData.results[0].id;
-      
       const [detailsResponse, creditsResponse] = await Promise.all([
         fetch(`${TMDB_BASE_URL}/movie/${movieId}?api_key=${TMDB_API_KEY}&language=en-US`),
         fetch(`${TMDB_BASE_URL}/movie/${movieId}/credits?api_key=${TMDB_API_KEY}&language=en-US`)
@@ -103,23 +78,38 @@ export default function Details() {
     }
   };
 
-  // fetch movie details when component mounts or movie name changes
-  useEffect(() => {
-    if (decodedMovieName) {
-      fetchMovieDetails(decodedMovieName);
-    }
-  }, [decodedMovieName]);
+  const fetchComments = async (movieId: string) => {
+    const comments = await commentsClient.getCommentsForMovie(movieId);
+    setComments(comments);
+  }
 
-  const handleAddComment = () => {
+  // fetch movie details and comments when component mounts or movieId changes
+  useEffect(() => {
+    if (movieId) {
+      fetchMovieDetails(movieId);
+      fetchComments(movieId);
+    }
+  }, [movieId]);
+
+  const handleAddComment = async () => {
     if (newComment.trim() && newAuthor.trim()) {
       const comment = {
-        id: comments.length + 1,
+        movieId: movieId,
         author: newAuthor.trim(),
-        text: newComment.trim()
+        // userId instead of author once the user is made
+        text: newComment.trim(),
+        timestamp: new Date()
       }
-      setComments([...comments, comment])
-      setNewComment('')
-      setNewAuthor('')
+
+      try {
+        await commentsClient.addComment(comment);
+        
+        setComments([...comments, comment])
+        setNewComment('')
+        setNewAuthor('')
+      } catch (err) {
+        console.error('Error adding comment:', err);
+      }
     }
   }
 
@@ -149,11 +139,12 @@ export default function Details() {
     <>
       <Navigation />
       <div style={{ padding: '20px', maxWidth: '1000px', margin: '0 auto' }}>
-        {!decodedMovieName && (
+        {!movieId && (
           <h1 style={{ color: '#333' }}>No movie selected</h1>
+          // should never get here without url hacking but just in case
         )}
 
-        {decodedMovieName && (
+        {movieId && (
           <>
             {loading && (
               <div style={{ textAlign: 'center', padding: '50px' }}>
@@ -173,7 +164,7 @@ export default function Details() {
               }}>
                 <h2>Error Loading Movie</h2>
                 <p>{error}</p>
-                <p>Searched for: "{decodedMovieName}"</p>
+                <p>Movie ID: "{movieId}"</p>
               </div>
             )}
 
@@ -266,18 +257,20 @@ export default function Details() {
                     }}>
                       {movieCredits.cast.slice(0, 10).map(actor => (
                         <a
+                          key={actor.id}
                           href={`https://www.google.com/search?q=${encodeURIComponent(actor.name)}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           style={{ textDecoration: 'none', color: 'inherit' }}
                         >
-                          <div key={actor.id} 
+                          <div 
                             style={{ 
                               backgroundColor: 'white', 
                               borderRadius: '8px', 
                               overflow: 'hidden',
                               transition: 'all 0.2s',
-                              boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                              boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                              cursor: 'pointer'
                             }}
                             onMouseEnter={(e) => {
                               e.currentTarget.style.backgroundColor = '#f8f9fa';
@@ -359,7 +352,7 @@ export default function Details() {
                           borderRadius: '6px',
                           fontSize: '16px',
                           resize: 'vertical',
-                          minHeight: '50px'
+                          minHeight: '100px'
                         }}
                       />
                       <button 

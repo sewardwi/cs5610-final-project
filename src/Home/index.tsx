@@ -79,7 +79,7 @@ export default function Home() {
               {popularMovies.map(movie => (
                 <Link 
                   key={movie.id}
-                  to={`/details/${encodeURIComponent(movie.title)}`}
+                  to={`/details/${encodeURIComponent(movie.id)}`}
                   style={{ textDecoration: 'none' }}
                 >
                   <div style={{ 
@@ -202,7 +202,7 @@ export default function Home() {
               {topRatedMovies.map(movie => (
                 <Link 
                   key={movie.id}
-                  to={`/details/${encodeURIComponent(movie.title)}`}
+                  to={`/details/${encodeURIComponent(movie.id)}`}
                   style={{ textDecoration: 'none' }}
                 >
                   <div style={{ 
