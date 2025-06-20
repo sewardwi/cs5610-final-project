@@ -46,7 +46,7 @@ export default function Home() {
     <>
       <Navigation />
       <div className="jaw-content">
-        <h1>Welcome to the Home Page</h1>
+        <h1>Welcome to Movie Review System</h1>
         
         {loading && (
           <div style={{ marginTop: '20px', textAlign: 'center' }}>
