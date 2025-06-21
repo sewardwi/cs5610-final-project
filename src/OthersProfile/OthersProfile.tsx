@@ -1,8 +1,8 @@
 import { Row, Col, Form } from "react-bootstrap";
 import { useState } from "react";
-import { updateUser } from "./client";
+import { updateUser } from "../Profile/client";
 
-export default function MyProfile() {
+export default function OthersProfile() {
     const initialUser = {
         _id: "1011",
         username: "johny",
@@ -39,7 +39,8 @@ export default function MyProfile() {
     // ✔️ When user edits, we will change the temporary state 
     // When user clicks save, we will dispatch an action to update the user in redux and also update the user in the backend : backend done, redux-blocked
     // ✔️ When user clicks cancel, we will reset the temporary state to the original user data from redux 
-    // ✔️ add validations to form fields.
+    // add validations to form fields.
+    // add condition so that only admin can edit this form
   return (
     <div id="jaw-my-profile" style={{ padding: '20px', width: '100%' }}>
         <Form>
@@ -165,7 +166,7 @@ export default function MyProfile() {
             </Col>
             </Row>
             <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            {editing ? (
+            {localUser.role === 'Admin' && editing ? (
             <>
             <button
                 type="button"

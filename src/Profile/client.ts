@@ -1,7 +1,7 @@
 import axios from "axios";
 const REMOTE_SERVER = import.meta.env.VITE_REMOTE_SERVER;
 const user_API = `${REMOTE_SERVER}/api/users`;
-const Interaction_API = `${REMOTE_SERVER}/api/interactions`;
+// const Interaction_API = `${REMOTE_SERVER}/api/interactions`;
 
 export const updateUser = async (user: any) => {
   const { data } = await axios.put(`${user_API}/${user._id}`, user);
@@ -10,6 +10,7 @@ export const updateUser = async (user: any) => {
 
 export const fetchFavorites = async (userId: string) => {
 //   const { data } = await axios.get(`${Interaction_API}/${userId}/favorites`);
+console.log("fetchFavorites called with userId:", userId);
     const data = [
         { _id: 1, url:'google.com', name: "Favorite 1", title: "Google", time: "2024-01-01 12:00" },
         { _id: 2, url:'google.com', name: "Favorite 2", title: "Google", time: "2024-01-01 12:00" },
@@ -19,6 +20,7 @@ export const fetchFavorites = async (userId: string) => {
 
 export const fetchReviews = async (userId: string) => {
 //   const { data } = await axios.get(`${Interaction_API}/${userId}/review`);
+console.log("fetchFavorites called with userId:", userId);
     const data = [
         { _id: 1, url:'google.com', name: "Favorite 1", title: "Google", time: "2024-01-01 12:00" },
         { _id: 2, url:'google.com', name: "Favorite 2", title: "Google", time: "2024-01-01 12:00" },
@@ -28,6 +30,7 @@ export const fetchReviews = async (userId: string) => {
 
 export const fetchPeople = async (userId: string) => {
 //   const { data } = await axios.get(`${user_API}/${userId}/follows`);
+console.log("fetchFavorites called with userId:", userId);
 const data = [
     {
         _id: 1011,
@@ -58,5 +61,16 @@ const data = [
         updated_at: "2024-11-20T16:45:00Z"
     }
 ];
+    return data;
+}
+
+export const fetchOthersFavorites = async (userId: string) => {
+    console.log("fetchFavorites called with userId:", userId);
+    // change this api route
+//   const { data } = await axios.get(`${Interaction_API}/${userId}/othersfavorites`);
+    const data = [
+        { _id: 1, url:'google.com', name: "Favorite 3", title: "Google", time: "2024-01-01 12:00" },
+        { _id: 2, url:'google.com', name: "Favorite 4", title: "Google", time: "2024-01-01 12:00" },
+    ];
     return data;
 }
