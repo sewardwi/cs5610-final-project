@@ -14,7 +14,7 @@ function App() {
       <Routes>
         <Route /* Home Page */ path="/" element={<Navigate to="home"/>} />
         <Route /* Home Page */ path="/home" element={<Home/>} />
-        <Route /* Profile Page */ path="/profile" element={<Profile/>} />
+        <Route /* Profile Page */ path="/profile/*" element={<Profile/>} />
         <Route /* Login Page */ path="/login" element={<Login/>} />
         <Route /* Search Page (with Param) */ path="/search/:movie" element={<Search />} />
         <Route /* Search Page (no Param) */ path="/search" element={<Search />} />
