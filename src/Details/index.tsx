@@ -80,7 +80,7 @@ export default function Details() {
 
   const fetchComments = async (movieId: string) => {
     const comments = await commentsClient.getCommentsForMovie(movieId);
-    setComments(comments);
+    setComments(comments as any[]);
   }
 
   // fetch movie details and comments when component mounts or movieId changes

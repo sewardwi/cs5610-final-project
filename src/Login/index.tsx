@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import Navigation from "../Navigation";
 import { useState } from "react";
 import axios from "axios";
@@ -21,15 +22,15 @@ export default function Login() {
             const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
             const response = await axios.post(`${baseURL}${endpoint}`, data);
             
-            if (response.data.success) {
+            if ((response.data as any).success) {
                 if (isLogin) {
-                    localStorage.setItem('user', JSON.stringify(response.data.user));
+                    localStorage.setItem('user', JSON.stringify((response.data as any).user));
                     window.location.href = '/';
                 } else {
                     setMessage('Account created! You can now login.');
                 }
             } else {
-                setMessage(response.data.message || 'Invalid username or password');
+                setMessage((response.data as any).message || 'Invalid username or password');
             }
         } catch {
             setMessage('Cannot connect to server');
