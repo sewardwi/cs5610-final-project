@@ -13,6 +13,7 @@ export default function Navigation() {
             <Nav.Item> <Nav.Link className="navlink" as={Link} to="/" active={pathname.includes('home')}>Home</Nav.Link> </Nav.Item>
             <Nav.Item> <Nav.Link className="navlink" as={Link} to="/search" active={pathname.includes('search')} >Search</Nav.Link> </Nav.Item>
             <Nav.Item> <Nav.Link className="navlink" as={Link} to="/profile" active={pathname.includes('profile')} >Profile</Nav.Link> </Nav.Item>
+            <Nav.Item> <Nav.Link className="navlink" as={Link} to="/login" active={pathname.includes('login')} >Login</Nav.Link> </Nav.Item>
           </Nav>
         </Navbar.Collapse>
       </Container>
