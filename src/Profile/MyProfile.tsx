@@ -17,6 +17,7 @@ export default function MyProfile() {
         created_at: "2022-01-15T10:30:00Z",
         updated_at: "2024-12-01T14:20:00Z"
     }
+    
     const [editing, setEditing] = useState(false);
     const [localUser, setLocalUser] = useState(initialUser);
     const localUserModify = (field: keyof typeof localUser, value: string) => {

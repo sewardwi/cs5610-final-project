@@ -1,6 +1,7 @@
 // righn now this page is static. Below is the logic plan for this page:
 // we will make api calls in client.ts to fetch the favorites of the user.
 // we will display the favorites in a table format using loop.
+import { Link } from "react-router-dom";
 import { fetchFavorites } from "./client";
 import { useEffect, useState } from "react";
 
@@ -9,6 +10,7 @@ export default function Favorites() {
   const [favorites, setFavorites] = useState<any>();
   const fetchSaveFavorites = async (userId:any) => {
     const favs = await fetchFavorites(userId);
+    console.log("favorites fetched:", favs);
     setFavorites(favs);
   }
 
@@ -26,7 +28,7 @@ export default function Favorites() {
           <thead>
             <tr>
               <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '8px' }}>Title</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '8px' }}>Time</th>
+              <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '8px' }}>Link</th>
             </tr>
           </thead>
           <tbody>
@@ -34,10 +36,12 @@ export default function Favorites() {
             {favorites && favorites.map((fav:any) => (
               <tr key={fav._id}>
                 <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
-                  <a href={fav.url} target="_blank" rel="noopener noreferrer">{fav.title}</a>
+                    {fav.title}
                 </td>
                 <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
-                  {fav.time}
+                  <Link to={`/details/${fav.movie_id}`} target="_blank" rel="noopener noreferrer">
+                    <button type="button" className="btn btn-success">GO</button>
+                  </Link>
                 </td>
               </tr>
             ))}
