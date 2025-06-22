@@ -10,7 +10,6 @@ export default function Favorites() {
   const [favorites, setFavorites] = useState<any>();
   const fetchSaveFavorites = async (userId:any) => {
     const favs = await fetchFavorites(userId);
-    console.log("favorites fetched:", favs);
     setFavorites(favs);
   }
 
@@ -32,19 +31,26 @@ export default function Favorites() {
             </tr>
           </thead>
           <tbody>
-            {/* Replace the below with your actual favorites data */}
-            {favorites && favorites.map((fav:any) => (
-              <tr key={fav._id}>
-                <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+            {favorites && favorites.length > 0 ? (
+              favorites.map((fav: any) => (
+                <tr key={fav._id}>
+                  <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
                     {fav.title}
-                </td>
-                <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
-                  <Link to={`/details/${fav.movie_id}`} target="_blank" rel="noopener noreferrer">
-                    <button type="button" className="btn btn-success">GO</button>
-                  </Link>
+                  </td>
+                  <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                    <Link to={`/details/${fav.movie_id}`} target="" rel="noopener noreferrer">
+                      <button type="button" className="btn btn-success">GO</button>
+                    </Link>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={2} style={{ padding: '8px', textAlign: 'center', fontStyle: 'italic' }}>
+                  No favorites found.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
     </div>

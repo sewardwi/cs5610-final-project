@@ -12,8 +12,8 @@ export default function MyProfile() {
         first_name: "John",
         last_name: "Doe",
         bio: "Passionate filmmaker and movie enthusiast with 10+ years in the indust…",
-        date_joined: "2022-01-15",
-        role: "content_creator",
+        date_joined: "2022-01-26T00:00:00.000+00:00",
+        role: "admin",
         created_at: "2022-01-15T10:30:00Z",
         updated_at: "2024-12-01T14:20:00Z"
     }
@@ -32,6 +32,13 @@ export default function MyProfile() {
         // Here will be code to update the user in the backend
         updateUser(localUser);
         setEditing(false);
+    }
+
+    // Helper function to format date to YYYY-MM-DD
+    // This function will be used to format the date_joined field
+    const formatDate = (dateString:any) => {
+        if (!dateString) return '';
+        return new Date(dateString).toISOString().slice(0, 10);
     }
 
 
@@ -79,14 +86,13 @@ export default function MyProfile() {
             <Form.Select
                 value={localUser.role}
                 className="jaw-bg-gray"
-                disabled={!editing}
-                isInvalid={editing && !["user", "admin", "premium_user", "content_creator"].includes(localUser.role)}
+                disabled={!(editing && localUser.role === "admin")}
+                isInvalid={editing && !["user", "admin", "critic"].includes(localUser.role)}
                 onChange={e => localUserModify("role", e.target.value)}
             >
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
-                <option value="premium_user">Premium User</option>
-                <option value="content_creator">Content Creator</option>
+                <option value="critic">Critic</option>
             </Form.Select>
             <Form.Control.Feedback type="invalid">
                 Please select a valid role.
@@ -96,7 +102,7 @@ export default function MyProfile() {
             <Form.Label>Date Joined</Form.Label>
             <Form.Control
                 type="text"
-                value={localUser.date_joined}
+                value={formatDate(localUser?.date_joined) || ""}
                 className="jaw-bg-gray"
                 readOnly
             />
@@ -177,7 +183,7 @@ export default function MyProfile() {
                 localUser.last_name.trim() === "" ||
                 !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(localUser.email) ||
                 !/^\+?[0-9\- ]{7,20}$/.test(localUser.phone) ||
-                !["user", "admin", "premium_user", "content_creator"].includes(localUser.role) ||
+                !["user", "admin", "critic"].includes(localUser.role) ||
                 !/^\d{4}-\d{2}-\d{2}$/.test(localUser.date_joined) ||
                 localUser.bio.trim().length < 10
                 }

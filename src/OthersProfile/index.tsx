@@ -6,6 +6,7 @@ import OthersFavorites from "./OthersFavorites";
 import OthersReviews from "./OthersReviews";
 import { Navbar, Container, Nav } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
+import OtherPeople from "./OthersPeople";
 
 export default function OthersProfile() {
     const { uid } = useParams();
@@ -32,8 +33,8 @@ export default function OthersProfile() {
                     <Route path="/" element={<Navigate to={`/otherprofile/${uid}/oprofile`} />} />
                     <Route path="/oprofile/*" element={<OthersProfilePage />} />
                     <Route path="/favorites/*" element={<OthersFavorites uid={uid} />} />
-                    <Route path="/reviews/*" element={<OthersReviews />} />
-                    {/* <Route path="/people/*" element={<People />} /> */}
+                    <Route path="/reviews/*" element={<OthersReviews uid={uid} />} />
+                    <Route path="/people/*" element={<OtherPeople uid={uid}/>} />
                 </Routes>
             </div>
         </div>
