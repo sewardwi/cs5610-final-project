@@ -19,7 +19,7 @@ export default function Login() {
             
         try {
             const endpoint = isLogin ? '/api/login' : '/api/signup';
-            const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000';
+            const baseURL = import.meta.env.VITE_REMOTE_SERVER || 'http://localhost:4000';
             const response = await axios.post(`${baseURL}${endpoint}`, data);
             
             if ((response.data as any).success) {
