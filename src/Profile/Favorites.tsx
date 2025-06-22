@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { fetchFavorites } from "./client";
 import { useEffect, useState } from "react";
 
-export default function Favorites() {
+export default function Favorites({ currentUser }: { currentUser?: any }) {
 
   const [favorites, setFavorites] = useState<any>();
   const fetchSaveFavorites = async (userId:any) => {
@@ -14,7 +14,7 @@ export default function Favorites() {
   }
 
   useEffect(() => {
-    const userId = 1011;
+    const userId = currentUser.id;
     fetchSaveFavorites(userId);
   }, []);
  
