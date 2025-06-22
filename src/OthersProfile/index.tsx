@@ -7,10 +7,29 @@ import OthersReviews from "./OthersReviews";
 import { Navbar, Container, Nav } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import OtherPeople from "./OthersPeople";
+import { useEffect, useState } from "react";
+import { fetchUserByUNameUEmail } from "../Profile/client";
 
 export default function OthersProfile() {
     const { uid } = useParams();
     const { pathname } = useLocation();
+    useEffect(() => {
+        const user = localStorage.getItem('user');
+        console.log('user', user);
+        if (user) {
+            fetchUser(JSON.parse(user));
+        }
+    }, []);
+    const [currentUser, setCurrentUser] = useState<any>();
+    const fetchUser = async (user: any) => {
+        try {
+            const tempUser = await fetchUserByUNameUEmail(user.username, user.email);
+            console.log('tempUser', tempUser);
+            setCurrentUser(tempUser);
+        } catch (error) {
+            console.error("Error fetching user:", error);
+        }
+    }
     return (
         <>
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -31,7 +50,7 @@ export default function OthersProfile() {
                 </div>
                 <Routes>
                     <Route path="/" element={<Navigate to={`/otherprofile/${uid}/oprofile`} />} />
-                    <Route path="/oprofile/*" element={<OthersProfilePage />} />
+                    <Route path="/oprofile/*" element={<OthersProfilePage currentUser={currentUser}/>} />
                     <Route path="/favorites/*" element={<OthersFavorites uid={uid} />} />
                     <Route path="/reviews/*" element={<OthersReviews uid={uid} />} />
                     <Route path="/people/*" element={<OtherPeople uid={uid}/>} />

@@ -7,6 +7,7 @@ import Search from './Search';
 import Details from './Details';
 import Login from './Login';
 import OthersProfile from './OthersProfile';
+import ProtectedRoute from './ProtectedRoute';
 
 function App() {
 
@@ -15,7 +16,11 @@ function App() {
       <Routes>
         <Route /* Home Page */ path="/" element={<Navigate to="home"/>} />
         <Route /* Home Page */ path="/home" element={<Home/>} />
-        <Route /* Profile Page */ path="/profile/*" element={<Profile/>} />
+        <Route path="/profile/*" element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            } />
         <Route /* Other users profile Page */ path="/otherprofile/:uid/*" element={<OthersProfile/>} />
         <Route /* Login Page */ path="/login" element={<Login/>} />
         <Route /* Search Page (with Param) */ path="/search/:movie" element={<Search />} />

@@ -3,27 +3,18 @@ import { useEffect, useState } from "react";
 import { updateUser, fetchUserById, addFollowToUser, removeFollowFromUser, fetchFollowRelationFromDb } from "../Profile/client";
 import { useParams, useNavigate } from "react-router-dom";
 
-export default function OtherUsersProfile() {
+export default function OtherUsersProfile({ currentUser }: { currentUser?: any }) {
     const { uid } = useParams();
     const navigate = useNavigate();
-
-    // Fetch currently logged-in user data
-    const loggedInUser = {
-        _id: "1011",
-        username: "johny",
-        email: "john.doe@email.com",
-        password: "asd",
-        phone: "+1-555-0999",
-        first_name: "John",
-        last_name: "Doe",
-        bio: "Passionate filmmaker and movie enthusiast with 10+ years in the indust…",
-        date_joined: "2022-01-15",
-        role: "admin",
-        created_at: "2022-01-15T10:30:00Z",
-        updated_at: "2024-12-01T14:20:00Z"
-    }
+    const [loggedInUser, setLoggedInUser] = useState<any>();
     
-    const formatDate = (dateString:any) => {
+    useEffect(() => {
+        if (currentUser) {
+            setLoggedInUser(currentUser);
+        }
+    }, [currentUser]);
+
+    const formatDate = (dateString: any) => {
         if (!dateString) return '';
         return new Date(dateString).toISOString().slice(0, 10);
     }
@@ -39,15 +30,17 @@ export default function OtherUsersProfile() {
     }
 
     const [following, setFollowing] = useState<any>();
-    const fetchFollowRelation = async (userId: string, loggedInUserId: any ) => {
-        try{
+    
+    const fetchFollowRelation = async (userId: string, loggedInUserId: any) => {
+        try {
             // make sure to pass loggedInUserId before userId.
             const followRelation = await fetchFollowRelationFromDb(loggedInUserId, userId);
             setFollowing(followRelation);
-        }catch (error) {
+        } catch (error) {
             console.error("Error fetching follow relation:", error);
         }
     }
+    
     const [editing, setEditing] = useState(false);
     const [localUser, setLocalUser] = useState<any>();
     const [localUserDefault, setLocalUserDefault] = useState<any>();
@@ -65,37 +58,62 @@ export default function OtherUsersProfile() {
         try {
             await updateUser(localUser);
             setEditing(false);
-        } catch (error) { console.error("Error updating user:", error); }
+        } catch (error) { 
+            console.error("Error updating user:", error); 
+        }
     }
     
     const addFollow = async () => {
-        const followData = {
-            follower_id: String(loggedInUser._id),
-            following_id: String(localUser._id)
-        };
-        const res = await addFollowToUser(followData);
-        console.log("Follow added:", res);
-        setFollowing(fetchFollowRelation(localUser._id, loggedInUser._id));
+        if (!loggedInUser?._id || !localUser?._id) {
+            console.error("Missing user IDs for follow operation");
+            return;
+        }
+        
+        try {
+            const followData = {
+                follower_id: String(loggedInUser._id),
+                following_id: String(localUser._id)
+            };
+            const res = await addFollowToUser(followData);
+            console.log("Follow added:", res);
+            await fetchFollowRelation(localUser._id, loggedInUser._id);
+        } catch (error) {
+            console.error("Error adding follow:", error);
+        }
     }
 
     const removeFollow = async () => {
-        const res = await removeFollowFromUser(String(loggedInUser._id), String(localUser._id));
-        console.log("Follow removed:", res);
-        setFollowing(fetchFollowRelation(localUser._id, loggedInUser._id));
+        if (!loggedInUser?._id || !localUser?._id) {
+            console.error("Missing user IDs for unfollow operation");
+            return;
+        }
+        
+        try {
+            const res = await removeFollowFromUser(String(loggedInUser._id), String(localUser._id));
+            console.log("Follow removed:", res);
+            await fetchFollowRelation(localUser._id, loggedInUser._id);
+        } catch (error) {
+            console.error("Error removing follow:", error);
+        }
     }
 
-    
     useEffect(() => {
         if (!uid) {
             console.log("User ID is required to fetch user profile.");
             navigate('/home');
             return;
         }
+        
         console.log("Fetching user with ID:", uid);
         fetchUser(uid);
-        fetchFollowRelation(uid, loggedInUser._id);
-    }, [uid, navigate]);
+        
+        // Only fetch follow relation if loggedInUser is available
+        if (loggedInUser?._id) {
+            fetchFollowRelation(uid, loggedInUser._id);
+        }
+    }, [uid, navigate, loggedInUser]); // Add loggedInUser to dependencies
 
+    // Show loading only if localUser is not available (the profile being viewed)
     if (!localUser) {
         return <div>Loading...</div>;
     }
@@ -221,7 +239,8 @@ export default function OtherUsersProfile() {
                 </Col>
                 </Row>
                 <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-                {loggedInUser.role === 'admin' && (
+                {/* Admin edit buttons - only show if loggedInUser is available and is admin */}
+                {loggedInUser?.role === 'admin' && (
                     editing ? (
                         <>
                         <button
@@ -267,32 +286,33 @@ export default function OtherUsersProfile() {
                         </button>
                     )
                 )}
-                {following ? 
-                (
-                <button
-                    type="button"
-                    className="btn btn-danger"
-                    onClick={e => {
-                        e.preventDefault();
-                        removeFollow();
-                    }}
-                >
-                    Unfollow
-                </button>
-                ):
-                (<button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={e => {
-                        e.preventDefault();
-                        addFollow();
-                    }}
-                >
-                    Follow
-                </button>)}
                 
-
-                
+                {/* Follow/Unfollow buttons - only show if both users are available and different */}
+                {loggedInUser && localUser?._id !== loggedInUser?._id && (
+                    following ? (
+                        <button
+                            type="button"
+                            className="btn btn-danger"
+                            onClick={e => {
+                                e.preventDefault();
+                                removeFollow();
+                            }}
+                        >
+                            Unfollow
+                        </button>
+                    ) : (
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={e => {
+                                e.preventDefault();
+                                addFollow();
+                            }}
+                        >
+                            Follow
+                        </button>
+                    )
+                )}
                 </div>
             </Form>
         </div>

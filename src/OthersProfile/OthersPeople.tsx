@@ -15,12 +15,9 @@ export default function OtherPeople({ uid }: { uid?: any }) {
             setPeople((people as any).followingData);
         }
     }
-    
       useEffect(() => {
         fetchSavepeople();
       }, [followType]);
-
-
      
     return(
         

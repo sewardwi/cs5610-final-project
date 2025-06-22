@@ -2,6 +2,7 @@
 import axios from "axios";
 const REMOTE_SERVER = import.meta.env.VITE_REMOTE_SERVER;
 const user_API = `${REMOTE_SERVER}/api/users`;
+const username_API = `${REMOTE_SERVER}/api/username`;
 const Interaction_API = `${REMOTE_SERVER}/api/interactions`;
 const follows_API = `${REMOTE_SERVER}/api/follows`;
 const follow_Status_API = `${REMOTE_SERVER}/api/followStatus`;
@@ -49,5 +50,10 @@ export const removeFollowFromUser = async (followerId: string, followingId: stri
 
 export const fetchFollowRelationFromDb = async (followerId: string, followingId: string) => {
     const { data } = await axios.get(`${follow_Status_API}?follower_id=${followerId}&following_id=${followingId}`);
+    return data;
+}
+
+export const fetchUserByUNameUEmail = async (username: string, email: string) => {
+    const { data } = await axios.get(`${username_API}?username=${username}&email=${email}`);
     return data;
 }
