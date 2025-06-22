@@ -6,6 +6,7 @@ import './App.css'
 import Search from './Search';
 import Details from './Details';
 import Login from './Login';
+import OthersProfile from './OthersProfile';
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
         <Route /* Home Page */ path="/" element={<Navigate to="home"/>} />
         <Route /* Home Page */ path="/home" element={<Home/>} />
         <Route /* Profile Page */ path="/profile/*" element={<Profile/>} />
+        <Route /* Other users profile Page */ path="/otherprofile/:uid/*" element={<OthersProfile/>} />
         <Route /* Login Page */ path="/login" element={<Login/>} />
         <Route /* Search Page (with Param) */ path="/search/:movie" element={<Search />} />
         <Route /* Search Page (no Param) */ path="/search" element={<Search />} />

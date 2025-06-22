@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { fetchReviews } from "./client";
 import { useEffect, useState } from "react";
 
@@ -19,19 +20,21 @@ export default function Review() {
             <thead>
               <tr>
                 <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '8px' }}>Title</th>
-                <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '8px' }}>Time</th>
+                <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '8px' }}>Link</th>
               </tr>
             </thead>
             <tbody>
               {/* Replace the below with your actual reviews data */}
               {reviews && reviews.map((rev:any) => (
                 <tr key={rev.id}>
-              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
-                <a href={rev.url} target="_blank" rel="noopener noreferrer">{rev.title}</a>
-              </td>
-              <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
-                {rev.time}
-              </td>
+                  <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                    {rev.title}
+                  </td>
+                  <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                    <Link to={`/details/${rev.movie_id}`} target="_blank" rel="noopener noreferrer">
+                      <button type="button" className="btn btn-success">GO</button>
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>
