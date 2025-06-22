@@ -1,13 +1,13 @@
 import { ListGroup} from "react-bootstrap";
-import { fetchPeople } from "./client";
+import { fetchPeople } from "../Profile/client";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function People() {
+export default function OtherPeople({ uid }: { uid?: any }) {
     const [people, setPeople] = useState<any>();
     const [followType, setFollowType] = useState('following');
-    const fetchSavepeople = async (userId:any) => {
-        const people = await fetchPeople(userId);
+    const fetchSavepeople = async () => {
+        const people = await fetchPeople(uid);
         if (followType === 'followers') {
             setPeople((people as any).followersData);
         }
@@ -17,8 +17,7 @@ export default function People() {
     }
     
       useEffect(() => {
-        const userId = 1011;
-        fetchSavepeople(userId);
+        fetchSavepeople();
       }, [followType]);
 
 
@@ -26,7 +25,7 @@ export default function People() {
     return(
         
     <div id="jaw-people" style={{ padding: '20px', width: '100%' }}>
-        This is the People page. Here you can view and manage your connections, friends, or any other people-related content.
+        This is the People page. Here you can view followers and followings of other users content.
         <div style={{ marginTop: '20px', marginBottom: '20px' }}>
             <select
                 value={followType}

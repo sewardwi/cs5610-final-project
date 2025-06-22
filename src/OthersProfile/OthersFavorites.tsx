@@ -19,7 +19,7 @@ export default function OthersFavorites({ uid }: { uid?: any }) {
 
   return (
     <div id="jaw-Othersfavorites" style={{ padding: '20px', width: '100%' }}>
-        This is the OthersFavorites page. Here you can view your favorite items, articles, or any other content you have marked as favorite.
+        This is the favorite page for other user. Here you can view your favorite items, articles, or any other content you have marked as favorite.
         <table style={{ width: '100%', marginTop: '20px', borderCollapse: 'collapse' }}>
           <thead>
             <tr>
@@ -28,19 +28,26 @@ export default function OthersFavorites({ uid }: { uid?: any }) {
             </tr>
           </thead>
           <tbody>
-            {/* Replace the below with your actual Othersfavorites data */}
-            {othersFavorites && othersFavorites.map((fav:any) => (
-              <tr key={fav._id}>
-                <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
-                  <a href={fav.url} target="_blank" rel="noopener noreferrer">{fav.title}</a>
-                </td>
-                <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
-                  <Link to={`/details/${fav.movie_id}`} target="_blank" rel="noopener noreferrer">
-                    <button type="button" className="btn btn-success">GO</button>
-                  </Link>
+            {othersFavorites && othersFavorites.length > 0 ? (
+              othersFavorites.map((fav: any) => (
+                <tr key={fav._id}>
+                  <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                    <a href={fav.url} target="" rel="noopener noreferrer">{fav.title}</a>
+                  </td>
+                  <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
+                    <Link to={`/details/${fav.movie_id}`} target="" rel="noopener noreferrer">
+                      <button type="button" className="btn btn-success">GO</button>
+                    </Link>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={2} style={{ padding: '8px', textAlign: 'center', fontStyle: 'italic' }}>
+                  No favorites found.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
     </div>
