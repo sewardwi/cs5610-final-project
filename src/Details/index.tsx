@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import Navigation from '../Navigation'
 import { TMDB_API_KEY, TMDB_BASE_URL, TMDB_IMAGE_BASE_URL } from '../TMDb_API/helpers'
-import * as commentsClient from "./client.ts";
+import * as detailsClient from "./client.ts";
 
 interface MovieDetails {
   id: number;
@@ -45,7 +46,22 @@ export default function Details() {
   
   const [comments, setComments] = useState<any[]>([])
   const [newComment, setNewComment] = useState('')
-  const [newAuthor, setNewAuthor] = useState('')
+  const [newTitle, setNewTitle] = useState('');
+
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const [currentUser, setCurrentUser] = useState<any>(null);
+
+  useEffect(() => {
+      const user = localStorage.getItem('user');
+      if (user) {
+          try {
+              setCurrentUser(JSON.parse(user));
+          } catch {
+              localStorage.removeItem('user');
+          }
+      }
+  }, []);
 
   // fetch movie details from api using movieId
   const fetchMovieDetails = async (movieId: string) => {
@@ -79,39 +95,116 @@ export default function Details() {
   };
 
   const fetchComments = async (movieId: string) => {
-    const comments = await commentsClient.getCommentsForMovie(movieId);
+    const comments = await detailsClient.getCommentsForMovie(movieId);
     setComments(comments as any[]);
-  }
+  };
 
-  // fetch movie details and comments when component mounts or movieId changes
+  // const fetchFavorites = async (movieId: string) => {
+  //   const isAlreadyFavorite = await detailsClient.isFavorite(movieId, currentUser.userId);
+  //   setIsFavorite(isAlreadyFavorite);
+  // };
+
+  const [, setFavoritesLoading] = useState(false);
+
+  const fetchFavorites = async (movieId: string) => {
+    setFavoritesLoading(true);
+    try {
+      const isAlreadyFavorite = await detailsClient.isFavorite(movieId, currentUser.userId);
+      setIsFavorite(isAlreadyFavorite);
+    } catch (err) {
+      console.error('Error fetching favorites:', err);
+    } finally {
+      setFavoritesLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (movieId) {
       fetchMovieDetails(movieId);
-      fetchComments(movieId);
     }
   }, [movieId]);
 
+  // Fetch favorites only once when component mounts with both movieId and currentUser
+  useEffect(() => {
+    if (movieId && currentUser?.userId) {
+      fetchFavorites(movieId);
+    }
+  }, [movieId, currentUser?.userId]);
+
+  useEffect(() => {
+    if (movieId) {
+      fetchComments(movieId);
+    }
+  }, [movieId])
+
   const handleAddComment = async () => {
-    if (newComment.trim() && newAuthor.trim()) {
+    if (newComment.trim()) {
+      const createAtDate = new Date();
       const comment = {
-        movieId: movieId,
-        author: newAuthor.trim(),
-        // userId instead of author once the user is made
-        text: newComment.trim(),
-        timestamp: new Date()
-      }
+        movie_id: movieId,
+        user_id: currentUser.userId,
+        content: newComment.trim(),
+        created_at: createAtDate,
+        updated_at: createAtDate,
+        type: "comment",
+        title: newTitle,
+      };
 
       try {
-        await commentsClient.addComment(comment);
+        await detailsClient.addComment(comment);
         
-        setComments([...comments, comment])
+        // setComments([...comments, comment])
+        if (movieId) {
+          await fetchComments(movieId);
+        }
+
         setNewComment('')
-        setNewAuthor('')
+        setNewTitle('')
       } catch (err) {
         console.error('Error adding comment:', err);
       }
     }
+  };
+
+  // handle deleting a comment
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      setComments(comments.filter(comment => comment._id !== commentId));
+      await detailsClient.deleteComment(commentId);
+    } catch (err) {
+      console.error("Error deleting comment: ", err);
+    }
   }
+
+  const handleToggleFavorite = async () => {
+    try {
+      if (isFavorite) {
+        // Set state BEFORE the API call
+        setIsFavorite(false);
+        await detailsClient.deleteFavorite(movieId, currentUser.userId);
+        console.log('favorite deleted from backend');
+      } else {
+        setIsFavorite(true);
+        const createAtDate = new Date();
+        const newFavoriteStructure = {
+          movie_id: movieId,
+          user_id: currentUser.userId,
+          content: "favorite content",
+          created_at: createAtDate,
+          updated_at: createAtDate,
+          type: "favorite",
+          title: "favorite title",
+        };
+        await detailsClient.addFavorite(newFavoriteStructure);
+      }
+    } catch (err) {
+      console.log("Error toggling favorite: ", err);
+      // On error, refetch to get correct state
+      if (movieId) {
+        fetchFavorites(movieId);
+      }
+    }
+  };
 
   // helpers
   const getDirector = () => {
@@ -133,6 +226,13 @@ export default function Details() {
 
   const formatGenres = (genres: { name: string }[]) => {
     return genres.map(genre => genre.name).join(', ');
+  };
+
+  const formatTimestamp = (timestamp: any) => {
+    if (timestamp) {
+      return timestamp.toLocaleString();
+    }
+    return timestamp;
   };
 
   return (
@@ -221,7 +321,36 @@ export default function Details() {
                   borderRadius: '12px', 
                   marginBottom: '30px' 
                 }}>
-                  <h2 style={{ marginTop: '0', color: '#333', marginBottom: '25px' }}>Movie Details</h2>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px' }}>
+                    <h2 style={{ marginTop: '0', color: '#333', margin: '0' }}>Movie Details</h2>
+                    <button 
+                      onClick={handleToggleFavorite}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        fontSize: '24px',
+                        cursor: 'pointer',
+                        padding: '8px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        transition: 'all 0.2s',
+                        backgroundColor: isFavorite ? '#fff3cd' : 'transparent'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = isFavorite ? '#ffeaa7' : '#f8f9fa';
+                        e.currentTarget.style.transform = 'scale(1.1)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = isFavorite ? '#fff3cd' : 'transparent';
+                        e.currentTarget.style.transform = 'scale(1)';
+                      }}
+                      title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                    >
+                      {isFavorite ? '⭐' : '☆'}
+                    </button>
+                  </div>
                   <div style={{ display: 'grid', gap: '20px', fontSize: '16px' }}>
                     <div>
                       <strong>Director:</strong> {getDirector()}
@@ -321,82 +450,126 @@ export default function Details() {
                 <div>
                   <h2 style={{ color: '#333', marginBottom: '20px' }}>Comments ({comments.length})</h2>
                   
-                  <div style={{ 
-                    backgroundColor: '#f0f8ff', 
-                    padding: '25px', 
-                    borderRadius: '12px', 
-                    marginBottom: '25px' 
-                  }}>
-                    <h3 style={{ marginTop: '0', color: '#333' }}>Add a Comment</h3>
-                    <div style={{ display: 'grid', gap: '15px' }}>
-                      <input
-                        type="text"
-                        placeholder="Your name"
-                        value={newAuthor}
-                        onChange={(e) => setNewAuthor(e.target.value)}
-                        style={{ 
-                          padding: '12px', 
-                          border: '1px solid #ddd', 
-                          borderRadius: '6px',
-                          fontSize: '16px'
-                        }}
-                      />
-                      <textarea
-                        placeholder="Write your comment..."
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
-                        rows={4}
-                        style={{ 
-                          padding: '12px', 
-                          border: '1px solid #ddd', 
-                          borderRadius: '6px',
-                          fontSize: '16px',
-                          resize: 'vertical',
-                          minHeight: '100px'
-                        }}
-                      />
-                      <button 
-                        onClick={handleAddComment}
-                        style={{ 
-                          padding: '12px 24px', 
-                          backgroundColor: '#007bff', 
-                          color: 'white', 
-                          border: 'none', 
-                          borderRadius: '6px',
-                          cursor: 'pointer',
-                          fontSize: '16px',
-                          fontWeight: '500'
-                        }}
-                      >
-                        Add Comment
-                      </button>
+                  {currentUser &&
+                    <div style={{ 
+                      backgroundColor: '#f0f8ff', 
+                      padding: '25px', 
+                      borderRadius: '12px', 
+                      marginBottom: '25px' 
+                    }}>
+                      <h3 style={{ marginTop: '0', color: '#333' }}>Add a Comment</h3>
+                      <div style={{ display: 'grid', gap: '15px' }}>
+                        <input
+                          type="text"
+                          placeholder="Title"
+                          value={newTitle}
+                          onChange={(e) => setNewTitle(e.target.value)}
+                          style={{ 
+                            padding: '12px', 
+                            border: '1px solid #ddd', 
+                            borderRadius: '6px',
+                            fontSize: '16px'
+                          }}
+                        />
+                        <textarea
+                          placeholder="Write your comment..."
+                          value={newComment}
+                          onChange={(e) => setNewComment(e.target.value)}
+                          rows={4}
+                          style={{ 
+                            padding: '12px', 
+                            border: '1px solid #ddd', 
+                            borderRadius: '6px',
+                            fontSize: '16px',
+                            resize: 'vertical',
+                            minHeight: '100px'
+                          }}
+                        />
+                        <button 
+                          onClick={handleAddComment}
+                          style={{ 
+                            padding: '12px 24px', 
+                            backgroundColor: '#007bff', 
+                            color: 'white', 
+                            border: 'none', 
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '16px',
+                            fontWeight: '500'
+                          }}
+                        >
+                          Add Comment
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  }
 
                   
-                  <div style={{ display: 'grid', gap: '15px' }}>
+                  <ul style={{ 
+                    display: 'grid', 
+                    gap: '15px', 
+                    listStyle: 'none',
+                    padding: '0',
+                    margin: '0'
+                  }}>
                     {comments.map(comment => (
-                      <div key={comment.id} style={{ 
-                        backgroundColor: 'white', 
-                        padding: '20px', 
-                        border: '1px solid #ddd', 
+                      <li key={comment._id} style={{
+                        backgroundColor: 'white',
+                        padding: '20px',
+                        border: '1px solid #ddd',
                         borderRadius: '8px',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                       }}>
-                        <div style={{ 
-                          display: 'flex', 
-                          justifyContent: 'space-between', 
-                          marginBottom: '10px' 
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          marginBottom: '10px',
+                          alignItems: 'flex-start'
                         }}>
-                          <strong style={{ color: '#333' }}>{comment.author}</strong>
-                          <span style={{ color: '#666', fontSize: '14px' }}>Just now</span>
+                          <div style={{ flex: 1 }}>
+                            <strong style={{ color: '#333' }}>{comment.user_id.username} </strong>
+                            <span style={{ color: '#666', fontSize: '14px' }}>
+                              {formatTimestamp(comment.created_at)}
+                            </span>
+                          </div>
+
+                          {currentUser.username == comment.user_id.username &&
+                            <button
+                              onClick={() => handleDeleteComment(comment._id)}
+                              style={{
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                padding: '4px',
+                                borderRadius: '4px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.2s',
+                                color: '#dc3545',
+                                fontSize: '16px'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#f8d7da';
+                                e.currentTarget.style.transform = 'scale(1.1)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = 'transparent';
+                                e.currentTarget.style.transform = 'scale(1)';
+                              }}
+                              title="Delete comment"
+                            >
+                              🗑️
+                            </button>
+                          }
+
                         </div>
                         <p style={{ margin: '0', color: '#555', lineHeight: '1.5' }}>
-                          {comment.text}
+                          {comment.content}
                         </p>
-                      </div>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 </div>
               </>
             )}
