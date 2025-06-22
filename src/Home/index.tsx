@@ -61,7 +61,7 @@ export default function Home() {
                   try {
                     const response = await fetch(`${TMDB_BASE_URL}/movie/${fav.movie_id}?api_key=${TMDB_API_KEY}`);
                     const movieData = await response.json();
-                    return { ...fav, poster_path: movieData.poster_path };
+                    return { ...fav, poster_path: movieData.poster_path, title: movieData.title };
                   } catch {
                     return fav;
                   }
