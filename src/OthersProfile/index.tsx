@@ -31,7 +31,7 @@ export default function OthersProfile() {
                 <Routes>
                     <Route path="/" element={<Navigate to={`/otherprofile/${uid}/oprofile`} />} />
                     <Route path="/oprofile/*" element={<OthersProfilePage />} />
-                    <Route path="/favorites/*" element={<OthersFavorites />} />
+                    <Route path="/favorites/*" element={<OthersFavorites uid={uid} />} />
                     <Route path="/reviews/*" element={<OthersReviews />} />
                     {/* <Route path="/people/*" element={<People />} /> */}
                 </Routes>

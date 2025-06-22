@@ -1,23 +1,21 @@
 // righn now this page is static. Below is the logic plan for this page:
 // we will make api calls in client.ts to fetch the Othersfavorites of the user.
 // we will display the Othersfavorites in a table format using loop.
+import { Link } from "react-router-dom";
 import { fetchOthersFavorites } from "../Profile/client";
 import { useEffect, useState } from "react";
 
-export default function OthersFavorites() {
+export default function OthersFavorites({ uid }: { uid?: any }) {
 
   const [othersFavorites, setOthersFavorites] = useState<any>();
-  const fetchSaveOthersFavorites = async (userId:any) => {
-    const favs = await fetchOthersFavorites(userId);
+  const fetchSaveOthersFavorites = async () => {
+    const favs = await fetchOthersFavorites(uid);
     setOthersFavorites(favs);
   }
 
   useEffect(() => {
-    const userId = 1011;
-    fetchSaveOthersFavorites(userId);
+    fetchSaveOthersFavorites();
   }, []);
- 
-
 
   return (
     <div id="jaw-Othersfavorites" style={{ padding: '20px', width: '100%' }}>
@@ -26,7 +24,7 @@ export default function OthersFavorites() {
           <thead>
             <tr>
               <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '8px' }}>Title</th>
-              <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '8px' }}>Time</th>
+              <th style={{ textAlign: 'left', borderBottom: '1px solid #ccc', padding: '8px' }}>Link</th>
             </tr>
           </thead>
           <tbody>
@@ -37,7 +35,9 @@ export default function OthersFavorites() {
                   <a href={fav.url} target="_blank" rel="noopener noreferrer">{fav.title}</a>
                 </td>
                 <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
-                  {fav.time}
+                  <Link to={`/details/${fav.movie_id}`} target="_blank" rel="noopener noreferrer">
+                    <button type="button" className="btn btn-success">GO</button>
+                  </Link>
                 </td>
               </tr>
             ))}

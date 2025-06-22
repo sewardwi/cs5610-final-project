@@ -37,11 +37,6 @@ export const fetchPeople = async (userId: string) => {
 
 export const fetchOthersFavorites = async (userId: string) => {
     console.log("fetchFavorites called with userId:", userId);
-    // change this api route
-//   const { data } = await axios.get(`${Interaction_API}/${userId}/othersfavorites`);
-    const data = [
-        { _id: 1, url:'google.com', name: "Favorite 3", title: "Google", time: "2024-01-01 12:00" },
-        { _id: 2, url:'google.com', name: "Favorite 4", title: "Google", time: "2024-01-01 12:00" },
-    ];
+    const { data } = await axios.get(`${Interaction_API}/${userId}/othersfavorites`);
     return data;
 }
