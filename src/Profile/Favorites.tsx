@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // righn now this page is static. Below is the logic plan for this page:
 // we will make api calls in client.ts to fetch the favorites of the user.
 // we will display the favorites in a table format using loop.
