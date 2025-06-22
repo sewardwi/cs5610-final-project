@@ -8,6 +8,10 @@ export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [bio, setBio] = useState('');
     const [message, setMessage] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -15,7 +19,7 @@ export default function Login() {
         
         const data = isLogin 
             ? { username, password }
-            : { username, password, email };
+            : { username, password, email, phone, first_name: firstName, last_name: lastName, bio };
             
         try {
             const endpoint = isLogin ? '/api/login' : '/api/signup';
@@ -64,14 +68,43 @@ export default function Login() {
                         />
 
                         {!isLogin && (
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                required
-                                style={{ width: '100%', padding: '10px', margin: '10px 0', border: '1px solid #ddd' }}
-                            />
+                            <>
+                                <input
+                                    type="email"
+                                    placeholder="Email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    style={{ width: '100%', padding: '10px', margin: '10px 0', border: '1px solid #ddd' }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Phone"
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                    style={{ width: '100%', padding: '10px', margin: '10px 0', border: '1px solid #ddd' }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="First Name"
+                                    value={firstName}
+                                    onChange={(e) => setFirstName(e.target.value)}
+                                    style={{ width: '100%', padding: '10px', margin: '10px 0', border: '1px solid #ddd' }}
+                                />
+                                <input
+                                    type="text"
+                                    placeholder="Last Name"
+                                    value={lastName}
+                                    onChange={(e) => setLastName(e.target.value)}
+                                    style={{ width: '100%', padding: '10px', margin: '10px 0', border: '1px solid #ddd' }}
+                                />
+                                <textarea
+                                    placeholder="Bio"
+                                    value={bio}
+                                    onChange={(e) => setBio(e.target.value)}
+                                    style={{ width: '100%', padding: '10px', margin: '10px 0', border: '1px solid #ddd', height: '80px' }}
+                                />
+                            </>
                         )}
 
                         <button type="submit" style={{ width: '100%', padding: '10px', margin: '10px 0', backgroundColor: '#007bff', color: 'white', border: 'none' }}>
