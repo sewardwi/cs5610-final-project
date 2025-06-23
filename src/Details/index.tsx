@@ -95,8 +95,8 @@ export default function Details() {
   };
 
   const fetchComments = async (movieId: string) => {
-    let comments = await detailsClient.getCommentsForMovie(movieId);
-    comments = comments.sort((a: any, b: any) => {
+    const comments = await detailsClient.getCommentsForMovie(movieId);
+    const sortedComments = (comments as any[]).sort((a: any, b: any) => {
       // If one is admin and other isn't, admin goes first
       if (a.user_id?.role === 'critic' && b.user_id?.role !== 'critic') return -1;
       if (a.user_id?.role !== 'critic' && b.user_id?.role === 'critic') return 1;
@@ -104,7 +104,7 @@ export default function Details() {
       // If both are admin or both are not admin, sort by created_at (newest first)
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
-    setComments(comments as any[]);
+    setComments(sortedComments as any[]);
   };
 
   // const fetchFavorites = async (movieId: string) => {
