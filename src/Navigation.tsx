@@ -29,6 +29,14 @@ export default function Navigation() {
         <Navbar.Brand href="#home" className="text-cream">Movie Review System</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto">
+            <Nav.Item> 
+              <Nav.Link className="navlink" as={Link} to="/team" active={pathname.includes('team')}>
+                Team
+              </Nav.Link> 
+            </Nav.Item>
+          </Nav>
+
           <Nav className="ms-auto" defaultActiveKey="/home">
             <Nav.Item> <Nav.Link className="navlink" as={Link} to="/" active={pathname.includes('home')}>Home</Nav.Link> </Nav.Item>
             <Nav.Item> <Nav.Link className="navlink" as={Link} to="/search" active={pathname.includes('search')} >Search</Nav.Link> </Nav.Item>

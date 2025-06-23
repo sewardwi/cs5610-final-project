@@ -8,6 +8,7 @@ import Details from './Details';
 import Login from './Login';
 import OthersProfile from './OthersProfile';
 import ProtectedRoute from './ProtectedRoute';
+import Team from './Team';
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
         <Route /* Search Page (no Param) */ path="/search" element={<Search />} />
         <Route /* Details (with Param) */ path="/details/:movieName" element={<Details />} />
         <Route /* Details (no Param) */ path="/details" element={<Details />} />
+        <Route /* Team Details */ path="/team" element={<Team />} />
       </Routes>
     </HashRouter>
   )
