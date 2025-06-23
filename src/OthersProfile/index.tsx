@@ -53,7 +53,7 @@ export default function OthersProfile() {
                     <Route path="/oprofile/*" element={<OthersProfilePage currentUser={currentUser}/>} />
                     <Route path="/favorites/*" element={<OthersFavorites uid={uid} />} />
                     <Route path="/reviews/*" element={<OthersReviews uid={uid} />} />
-                    <Route path="/people/*" element={<OtherPeople uid={uid}/>} />
+                    <Route path="/people/*" element={<OtherPeople/>} />
                 </Routes>
             </div>
         </div>
