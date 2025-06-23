@@ -179,7 +179,6 @@ export default function OtherUsersProfile({ currentUser }: { currentUser?: any }
                 </Form.Group>
                 </Col>
                 <Col md={6}>
-                {loggedInUser.role === 'admin' && (
                 <Form.Group className="mb-3">
                 <Form.Label>Email</Form.Label>
                 <Form.Control
@@ -194,7 +193,6 @@ export default function OtherUsersProfile({ currentUser }: { currentUser?: any }
                     Please enter a valid email address. 
                 </Form.Control.Feedback>
                 </Form.Group>
-                )}
                 <Form.Group className="mb-3">
                 <Form.Label>Last Name</Form.Label>
                 <Form.Control
@@ -209,7 +207,6 @@ export default function OtherUsersProfile({ currentUser }: { currentUser?: any }
                     Last name is required.
                 </Form.Control.Feedback>
                 </Form.Group>
-                {loggedInUser.role === 'admin' && (
                 <Form.Group className="mb-3">
                 <Form.Label>Phone</Form.Label>
                 <Form.Control
@@ -224,7 +221,6 @@ export default function OtherUsersProfile({ currentUser }: { currentUser?: any }
                     Please enter a valid phone number.
                 </Form.Control.Feedback>
                 </Form.Group>
-                )}
                 <Form.Group className="mb-3">
                 <Form.Label>Bio/Description</Form.Label>
                 <Form.Control
