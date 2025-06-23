@@ -96,8 +96,15 @@ export default function Details() {
 
   const fetchComments = async (movieId: string) => {
     const comments = await detailsClient.getCommentsForMovie(movieId);
-    console.log(comments);
-    setComments(comments as any[]);
+    const sortedComments = comments.sort((a: any, b: any) => {
+      // If one is admin and other isn't, admin goes first
+      if (a.user_id?.role === 'critic' && b.user_id?.role !== 'critic') return -1;
+      if (a.user_id?.role !== 'critic' && b.user_id?.role === 'critic') return 1;
+      
+      // If both are admin or both are not admin, sort by created_at (newest first)
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+    setComments(sortedComments as any[]);
   };
 
   // const fetchFavorites = async (movieId: string) => {
@@ -517,7 +524,7 @@ export default function Details() {
                       <li key={comment._id} style={{
                         backgroundColor: 'white',
                         padding: '20px',
-                        border: '1px solid #ddd',
+                        border: comment.user_id?.role === 'critic' ? '2px solid #ffeb3b' : '1px solid #ddd',
                         borderRadius: '8px',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                       }}>
@@ -587,7 +594,7 @@ export default function Details() {
                             </button>
                           }
                         </div>
-                        <p style={{ margin: '0', color: '#555', lineHeight: '1.5' }}>
+                        <p style={{ margin: '0', color: comment.user_id?.role === 'critic' ? '#2e7d32' : '#555', lineHeight: '1.5' }}>
                           {comment.content}
                         </p>
                       </li>
