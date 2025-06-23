@@ -96,6 +96,7 @@ export default function Details() {
 
   const fetchComments = async (movieId: string) => {
     const comments = await detailsClient.getCommentsForMovie(movieId);
+    console.log(comments);
     setComments(comments as any[]);
   };
 
@@ -534,7 +535,7 @@ export default function Details() {
                               </span>
                             </div>
                             <Link 
-                              to={`/otherprofile/${comment.user_id._id}`}
+                              to={`/otherprofile/${comment.user_id?._id}`}
                               style={{ textDecoration: 'none' }}
                             >
                               <strong 
@@ -551,12 +552,12 @@ export default function Details() {
                                   e.currentTarget.style.color = '#007bff';
                                 }}
                               >
-                                {comment.user_id.username}
+                                {comment.user_id?.username}
                               </strong>
                             </Link>
                           </div>
 
-                          {currentUser.username == comment.user_id.username &&
+                          {currentUser.username == comment.user_id?.username &&
                             <button
                               onClick={() => handleDeleteComment(comment._id)}
                               style={{
