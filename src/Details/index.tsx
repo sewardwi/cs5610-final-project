@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import Navigation from '../Navigation'
 import { TMDB_API_KEY, TMDB_BASE_URL, TMDB_IMAGE_BASE_URL } from '../TMDb_API/helpers'
 import * as detailsClient from "./client.ts";
@@ -527,10 +527,33 @@ export default function Details() {
                           alignItems: 'flex-start'
                         }}>
                           <div style={{ flex: 1 }}>
-                            <strong style={{ color: '#333' }}>{comment.user_id.username} </strong>
-                            <span style={{ color: '#666', fontSize: '14px' }}>
-                              {formatTimestamp(comment.created_at)}
-                            </span>
+                            <div style={{ marginBottom: '5px' }}>
+                              <strong> {comment.title} </strong>
+                              <span style={{ color: '#666', fontSize: '14px', marginLeft: '10px' }}>
+                                {formatTimestamp(comment.created_at)}
+                              </span>
+                            </div>
+                            <Link 
+                              to={`/otherprofile/${comment.user_id._id}`}
+                              style={{ textDecoration: 'none' }}
+                            >
+                              <strong 
+                                style={{ 
+                                  color: '#007bff', 
+                                  cursor: 'pointer',
+                                  transition: 'color 0.2s',
+                                  fontSize: '14px'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.color = '#0056b3';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.color = '#007bff';
+                                }}
+                              >
+                                {comment.user_id.username}
+                              </strong>
+                            </Link>
                           </div>
 
                           {currentUser.username == comment.user_id.username &&
@@ -562,7 +585,6 @@ export default function Details() {
                               🗑️
                             </button>
                           }
-
                         </div>
                         <p style={{ margin: '0', color: '#555', lineHeight: '1.5' }}>
                           {comment.content}
