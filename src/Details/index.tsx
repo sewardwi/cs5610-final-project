@@ -193,7 +193,7 @@ export default function Details() {
           created_at: createAtDate,
           updated_at: createAtDate,
           type: "favorite",
-          title: "favorite title",
+          title: movieDetails?.title || "favorite title",
         };
         await detailsClient.addFavorite(newFavoriteStructure);
       }
