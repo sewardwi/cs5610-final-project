@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { fetchReviews } from "./client";
 import { useEffect, useState } from "react";
 
-export default function Review({ currentUser }: { currentUser?: any }) {
+export default function Review() {
   const [reviews, setReviews] = useState<any>();
   const fetchSaveReviews = async (userId:any) => {
     const rews = await fetchReviews(userId);
@@ -10,12 +10,16 @@ export default function Review({ currentUser }: { currentUser?: any }) {
   }
 
   useEffect(() => {
-    const userId = currentUser._id;
-    fetchSaveReviews(userId);
-    if (currentUser) {
-      fetchSaveReviews(currentUser._id);
+    const user = localStorage.getItem('user');
+    if (user) {
+      try {
+        const userObj = JSON.parse(user);
+        fetchSaveReviews(userObj._id);
+      } catch {
+        localStorage.removeItem('user');
+      }
     }
-  }, [currentUser]);
+  }, []);
     return (
       <div id="jaw-reviews" style={{ padding: '20px', width: '100%' }}>
           This is the Reviews page. Here you can view your reviews on moviews.

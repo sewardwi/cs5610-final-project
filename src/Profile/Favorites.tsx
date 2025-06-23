@@ -1,12 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// righn now this page is static. Below is the logic plan for this page:
-// we will make api calls in client.ts to fetch the favorites of the user.
-// we will display the favorites in a table format using loop.
 import { Link } from "react-router-dom";
 import { fetchFavorites } from "./client";
 import { useEffect, useState } from "react";
 
-export default function Favorites({ currentUser }: { currentUser?: any }) {
+export default function Favorites() {
 
   const [favorites, setFavorites] = useState<any>();
   const fetchSaveFavorites = async (userId:any) => {
@@ -15,8 +11,16 @@ export default function Favorites({ currentUser }: { currentUser?: any }) {
   }
 
   useEffect(() => {
-    const userId = currentUser.id;
-    fetchSaveFavorites(userId);
+    // const userId = currentUser._id;
+    const user = localStorage.getItem('user');
+    if (user) {
+      try {
+        const userObj = JSON.parse(user);
+        fetchSaveFavorites(userObj._id);
+      } catch {
+        localStorage.removeItem('user');
+      }
+    }
   }, []);
  
 

@@ -35,8 +35,8 @@ export default function Profile() {
                 <Routes>
                     <Route path="/" element={<Navigate to="myprofile" />} />
                     <Route path="/myprofile/*" element={<MyProfile currentUser={currentUser} />} />
-                    <Route path="/favorites/*" element={<Favorites currentUser={currentUser}/>} />
-                    <Route path="/review/*" element={<Review currentUser={currentUser}/>} />
+                    <Route path="/favorites/*" element={<Favorites/>} />
+                    <Route path="/review/*" element={<Review />} />
                     <Route path="/people/*" element={<People currentUser={currentUser}/>} />
                 </Routes>
             </div>

@@ -34,7 +34,7 @@ export default function OthersReviews({ uid }: { uid?: any }) {
                     <a href={rev.url} target="" rel="noopener noreferrer">{rev.title}</a>
                   </td>
                   <td style={{ padding: '8px', borderBottom: '1px solid #eee' }}>
-                    <Link to={`/details/${rev.movie_id}`} target="" rel="noopener noreferrer">
+                    <Link to={`/details/${rev.movie_id}`} key={rev._id} target="" rel="noopener noreferrer">
                       <button type="button" className="btn btn-success">GO</button>
                     </Link>
                   </td>
