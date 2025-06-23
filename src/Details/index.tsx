@@ -557,7 +557,7 @@ export default function Details() {
                             </Link>
                           </div>
 
-                          {currentUser.username == comment.user_id?.username &&
+                          {currentUser?.username == comment.user_id?.username &&
                             <button
                               onClick={() => handleDeleteComment(comment._id)}
                               style={{
