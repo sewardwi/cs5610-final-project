@@ -37,18 +37,25 @@ export default function OtherPeople({ uid }: { uid?: any }) {
             <ListGroup.Item variant="secondary" style={{ fontWeight: 'bold' }}>
                 Name
             </ListGroup.Item>
-            {people && people.map((person: any) => (
-                <ListGroup.Item key={person._id}>
-                    <Link
-                        to={`/otherprofile/${person._id}`}
-                        target=""
-                        className="text-decoration-none"
-                        rel="noopener noreferrer"
-                    >
-                        {person.first_name}
-                    </Link>
-                </ListGroup.Item>
-            ))}
+
+                {people && people.length > 0 ? (
+                    people.map((person: any) => (
+                        <ListGroup.Item key={person._id}>
+                            <Link
+                                to={`/otherprofile/${person._id}`}
+                                target=""
+                                className="text-decoration-none"
+                                rel="noopener noreferrer"
+                            >
+                                {person.first_name || 'Unknown User'}
+                            </Link>
+                        </ListGroup.Item>
+                    ))
+                ) : (
+                    <ListGroup.Item style={{ textAlign: 'center', fontStyle: 'italic' }}>
+                        { `No ${followType} found.` }
+                    </ListGroup.Item>
+                )}
         </ListGroup>
     </div>
 )}
